@@ -3,7 +3,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
-
+//TODO Ändra height och width så att det blir tydligare
+//TODO Skapa high score lista
+//TODO Kolla över utskrift av spelplan
+//TODO gör en större Game Over Text
+//TODO gör ett välkomstmeddelande
+//TODO lägg till större frukt med mer poäng kanske under viss tid
+//TODO lägg till "onda" frukter
+//TODO Skapa svårighetsgrad/hastighet
 namespace Snake
 {
     class Program 
@@ -28,9 +35,12 @@ namespace Snake
         }
         static void Main(string[] args)
         {
+            HighScore hs = new HighScore("highscore.txt");
+            
             while(isRunning)
             {
                 Setup();
+                hs.Print(45, 7);
                 while (!gameOver)
                 {
                     Draw();
@@ -40,6 +50,13 @@ namespace Snake
                 }
                 Console.Clear();
                 Console.WriteLine($"\n\t\tGAME OVER!\n\n\t\t You got: {tailPos.Count()} points!");
+                if (hs.CheckScore(tailPos.Count()))
+                {
+                    Console.Write("\n\t\tGrattis! Du kom in i highscoren!\n\t\tSkriv in ditt namn: ");
+                    hs.AddToHighScore(new Player(Console.ReadLine(), tailPos.Count()));
+                }
+                Console.WriteLine();
+                hs.Print();     
                 do
                 {
                     Console.Write("\n\t\tDo you want to play again? [yes/no]: ");
@@ -47,6 +64,7 @@ namespace Snake
                 } while (input != "yes" && input != "no");
                 isRunning = input == "no" ? false : true;         
             }
+            hs.Save();
         }
         static void Setup()
         {
@@ -114,7 +132,7 @@ namespace Snake
             {
                 Write(item, "o", ConsoleColor.DarkYellow);
             }
-            Write(new Point(45, 10), $"Score: {tailPos.Count()}", ConsoleColor.White);
+            Write(new Point(45, 5), $"Score: {tailPos.Count()}", ConsoleColor.White);
         }
         static void Write(Point pos, string str, ConsoleColor color)
         {
